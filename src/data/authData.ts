@@ -2,7 +2,7 @@ import { AuthDataI } from "../types";
 
 export const loginInputsInitialState: AuthDataI = [
   {
-    placeHolder: "nick name",
+    placeHolder: "anonymus nickname",
     value: "",
     id: "0",
     name: "username",
@@ -19,7 +19,7 @@ export const loginInputsInitialState: AuthDataI = [
 
 export const registerInputsInitialState: AuthDataI = [
   {
-    placeHolder: "anonimus nick name",
+    placeHolder: "anonymus nick name",
     value: "",
     id: "0",
     name: "username",

@@ -21,18 +21,22 @@ const Register = ({ navigation }: { navigation: any }) => {
     terms: false,
   });
   const [items, setItems] = useState(registerInputsInitialState);
+  const [serverError, setServerError] = useState<string | undefined>();
 
   const handleSubmit = () => {
     let err = items.find((item) => item.nameError);
     const submitData = async () => {
-      const data = await registerUser(user);
-      if (data.username && dispatch) {
-        addUser(
-          { username: data.username, country: data.country, _id: data._id },
-          dispatch
-        );
-      }
-      if (data.username) {
+      let data = await registerUser(user);
+      if (data.status === 200) {
+        dispatch &&
+          addUser(
+            {
+              username: data.data.username,
+              country: data.data.country,
+              _id: data.data._id,
+            },
+            dispatch
+          );
         setItems(
           items.map((item) => {
             if (item.name) {
@@ -42,15 +46,18 @@ const Register = ({ navigation }: { navigation: any }) => {
           })
         );
       }
+      if (data.status === 301) {
+        console.log(data.data.data);
+        setServerError(data.data.data);
+      }
     };
-    console.log("user", user);
     !err && submitData();
   };
 
   const handleChange = (text: string, id: string) => {
     let pass1 = items.find((item) => item.name === "password");
     let pass2 = items.find((item) => item.name === "confirm-password");
-
+    setServerError(undefined);
     setItems(
       items.map((item) => {
         if (id === item.id) {
@@ -95,6 +102,7 @@ const Register = ({ navigation }: { navigation: any }) => {
           buttonTitle="Register"
           actionButton={handleSubmit}
           changeEvent={handleChange}
+          serverError={serverError}
         />
       </View>
       <View style={styles.containerGo}>

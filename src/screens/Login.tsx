@@ -12,8 +12,10 @@ import NetInfo from "@react-native-community/netinfo";
 const Login = ({ navigation }: { navigation: any }) => {
   const { dispatch } = useContext(AppContext);
   const [user, setUser] = useState<UserIAuth>({ username: "", password: "" });
+  const [serverError, setServerEror] = useState<string | undefined>(undefined);
   const [items, setItems] = useState<AuthDataI>(loginInputsInitialState);
   const handleChange = (text: string, id: string) => {
+    setServerEror(undefined);
     setItems(
       items.map((item) => {
         if (item.id === id) {
@@ -36,22 +38,35 @@ const Login = ({ navigation }: { navigation: any }) => {
     });
   };
   const handleSubmit = async () => {
+    let validateNull = items.find((item) => item.value.trim() === "");
+    if (validateNull) {
+      setItems(
+        items.map((item) => {
+          if (item.value.trim() === "") {
+            item.nameError = "this camp is required";
+          }
+          return item;
+        })
+      );
+    }
+    let validateError = items.find((item) => item.nameError);
+
+    console.log(validateNull, validateError);
     NetInfo.addEventListener((state) => {
       const isConnected = state.isConnected;
-      if (isConnected) {
+      if (isConnected && !validateError && !validateNull) {
         (async () => {
-          let data = await loginUser(user);
-          data.username &&
+          let res = await loginUser(user);
+          if (res.status === 200) {
             dispatch &&
-            addUser(
-              {
-                username: data.username,
-                _id: data._id,
-                country: data.country,
-              },
-              dispatch
-            );
-          data.username &&
+              addUser(
+                {
+                  username: res.data.username,
+                  _id: res.data._id,
+                  country: res.data.country,
+                },
+                dispatch
+              );
             setItems(
               items.map((item) => {
                 if (item.name) {
@@ -60,6 +75,10 @@ const Login = ({ navigation }: { navigation: any }) => {
                 return item;
               })
             );
+          }
+          if (res.status === 301) {
+            setServerEror(res.data.data);
+          }
         })();
       }
     });
@@ -73,11 +92,12 @@ const Login = ({ navigation }: { navigation: any }) => {
     <ScrollContainer>
       <View style={styles.container}>
         <CardAuth
-          title="login with your email"
+          title="login with your nickname"
           dataInputs={items}
           buttonTitle="Login"
           changeEvent={handleChange}
           actionButton={handleSubmit}
+          serverError={serverError}
         />
       </View>
       <View style={styles.containerGo}>

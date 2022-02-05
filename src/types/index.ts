@@ -14,6 +14,7 @@ export interface AuthCardPropsI {
   changeEvent?: any;
   checkValue?: boolean;
   checkChange?: any;
+  serverError?: string;
 }
 export interface UserIAuth {
   username: string;
