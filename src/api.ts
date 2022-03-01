@@ -1,12 +1,13 @@
-const API = "http://192.168.0.102:4000/";
+import config from "./config/config";
 import { UserIAuth } from "./types";
+const API = config.API;
 export const registerUser = async (user: UserIAuth) => {
   const data: any = {
     status: null,
     data: null,
   };
   try {
-    const res = await fetch(`${API}api/users`, {
+    const res = await fetch(`${API}/api/users`, {
       method: "POST",
       headers: {
         accept: "application/json",
@@ -28,7 +29,7 @@ export const loginUser = async (user: UserIAuth) => {
     data: null,
   };
   try {
-    const res = await fetch(`${API}api/users/auth`, {
+    const res = await fetch(`${API}/api/users/auth`, {
       method: "POST",
       headers: {
         accept: "application/json",

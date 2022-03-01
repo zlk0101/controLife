@@ -1,17 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import CardAuth from "../components/CardAuth";
-import { registerInputsInitialState } from "../data/authData";
+import { countrysWorld, registerInputsInitialState } from "../data/authData";
 import { registerUser } from "../api";
 import { UserIAuth } from "../types";
 import ScrollContainer from "../components/ScrollContainer";
 import { addUser } from "../context/appActions";
 import AppContext from "../context/AppContext";
 import {
+  saveUserStore,
+  validateCountry,
   validateMatchPassword,
   validateNickName,
   validatePassword,
 } from "../functions/functions";
+import CountryPicker from "../components/CountryPicker";
 const Register = ({ navigation }: { navigation: any }) => {
   const { dispatch } = useContext(AppContext);
   const [user, setUser] = useState<UserIAuth>({
@@ -21,22 +24,41 @@ const Register = ({ navigation }: { navigation: any }) => {
     terms: false,
   });
   const [items, setItems] = useState(registerInputsInitialState);
+  const [countryValue, setContryValue] = useState<any>("null");
+  const [countryE, setCountryE] = useState<boolean>(false);
   const [serverError, setServerError] = useState<string | undefined>();
 
   const handleSubmit = () => {
+    let nullError = items.find((item) => item.value.trim() === "");
+    let countryError = validateCountry(countryValue);
+    countryError ? setCountryE(true) : setCountryE(false);
+    if (nullError) {
+      setItems(
+        items.map((item) => {
+          if (item.value === "") {
+            item.nameError = "* this camp is required";
+          }
+          return item;
+        })
+      );
+    }
     let err = items.find((item) => item.nameError);
     const submitData = async () => {
       let data = await registerUser(user);
       if (data.status === 200) {
-        dispatch &&
-          addUser(
-            {
-              username: data.data.username,
-              country: data.data.country,
-              _id: data.data._id,
-            },
-            dispatch
-          );
+        saveUserStore({
+          username: data.data.username,
+          country: data.data.country,
+          _id: data.data._id,
+        });
+        addUser(
+          {
+            username: data.data.username,
+            country: data.data.country,
+            _id: data.data._id,
+          },
+          dispatch
+        );
         setItems(
           items.map((item) => {
             if (item.name) {
@@ -51,7 +73,7 @@ const Register = ({ navigation }: { navigation: any }) => {
         setServerError(data.data.data);
       }
     };
-    !err && submitData();
+    !err && !nullError && !countryError && submitData();
   };
 
   const handleChange = (text: string, id: string) => {
@@ -103,6 +125,18 @@ const Register = ({ navigation }: { navigation: any }) => {
           actionButton={handleSubmit}
           changeEvent={handleChange}
           serverError={serverError}
+          node={
+            <CountryPicker
+              valueChange={(iValue) => {
+                setContryValue(iValue);
+                setCountryE(false);
+                setUser({ ...user, country: iValue });
+              }}
+              value={countryValue}
+              items={countrysWorld}
+              countryError={countryE}
+            />
+          }
         />
       </View>
       <View style={styles.containerGo}>

@@ -16,7 +16,12 @@ export const loginInputsInitialState: AuthDataI = [
     nameError: null,
   },
 ];
-
+export const countrysWorld = [
+  { label: "select a country", value: "null" },
+  { label: "Peru", value: "pe" },
+  { label: "Chile", value: "cl" },
+  { label: "Argentina", value: "ar" },
+];
 export const registerInputsInitialState: AuthDataI = [
   {
     placeHolder: "anonymus nick name",
@@ -25,13 +30,7 @@ export const registerInputsInitialState: AuthDataI = [
     name: "username",
     nameError: null,
   },
-  {
-    placeHolder: "country",
-    value: "",
-    id: "1",
-    name: "country",
-    nameError: null,
-  },
+
   {
     placeHolder: "password",
     value: "",

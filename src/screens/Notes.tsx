@@ -1,19 +1,21 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
 
-const Tasks = () => {
+const Notes = () => {
   return (
     <View style={styles.container}>
-      <Text>Tasks</Text>
+      <Text style={styles.text}>Notes</Text>
     </View>
   );
 };
 
-export default Tasks;
-
+export default Notes;
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#141414",
     flex: 1,
+    backgroundColor: "#242424",
+  },
+  text: {
+    color: "#fff",
   },
 });

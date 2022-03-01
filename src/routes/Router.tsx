@@ -1,85 +1,77 @@
-import React, { useContext, useEffect } from "react";
-import { StatusBar, TouchableOpacity, Text } from "react-native";
+import React, { useContext } from "react";
+import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "../screens/Login";
-import Tasks from "../screens/Tasks";
 import AppContext from "../context/AppContext";
-import Home from "../screens/Home";
 import Register from "../screens/Register";
-import Profile from "../screens/Profile";
-import {
-  BottomTabNavigationOptions,
-  createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
-import { ActionTypes } from "../context/types";
-const Tab = createBottomTabNavigator();
+import TaskDayItem from "../screens/TaskDayItem";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import AppTabs from "./AppTabs";
+import AddTask from "../screens/AddTask";
+import CreateGoal from "../screens/CreateGoal";
+import GoalView from "../screens/GoalView";
+import TaskInfo from "../screens/TaskInfo";
 
-const optionsTab: BottomTabNavigationOptions = {
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+const optionsStack = {
   headerStyle: {
     backgroundColor: "#000",
     borderBottomWidth: 0,
   },
-  tabBarStyle: {
-    backgroundColor: "#000",
-    borderTopWidth: 0,
-  },
-
+  headerTintColor: "#fff",
   headerTitleStyle: {
     color: "#fff",
   },
 };
+
 const Router = () => {
-  const { user, dispatch } = useContext(AppContext);
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
+  const { user } = useContext(AppContext);
+
   return (
     <>
-      {user ? (
+      {user.user && (
         <NavigationContainer>
-          <Tab.Navigator>
-            <Tab.Screen
-              name="Goals"
-              component={Home}
-              options={{ ...optionsTab, headerShown: false }}
+          <Stack.Navigator>
+            <Stack.Screen
+              name="AppsStack"
+              component={AppTabs}
+              options={{ ...optionsStack, headerShown: false }}
             />
-            <Tab.Screen
-              name="tasks"
-              component={Tasks}
-              options={{ ...optionsTab, headerShown: false }}
+            <Stack.Screen
+              name="TasksDayItem"
+              component={TaskDayItem}
+              options={optionsStack}
             />
-            <Tab.Screen
-              name="Profile"
-              component={Profile}
-              options={{
-                ...optionsTab,
-                headerRight: () => (
-                  <TouchableOpacity
-                    onPress={() => {
-                      (async () => {
-                        await AsyncStorage.removeItem("user");
-                        dispatch &&
-                          dispatch({
-                            type: ActionTypes.REMOVE_USER,
-                            payload: null,
-                          });
-                      })();
-                    }}
-                  >
-                    <Text
-                      style={{ color: "#fff", marginRight: 20, fontSize: 15 }}
-                    >
-                      {"=>"}
-                    </Text>
-                  </TouchableOpacity>
-                ),
-              }}
+            <Stack.Screen
+              name="AddTask"
+              component={AddTask}
+              options={{ ...optionsStack, headerShown: false }}
             />
-          </Tab.Navigator>
+            <Stack.Screen
+              name="CreateGoal"
+              component={CreateGoal}
+              options={optionsStack}
+            />
+            <Stack.Screen
+              name="TaskInfo"
+              component={TaskInfo}
+              options={optionsStack}
+            />
+            <Stack.Screen
+              name="GoalView"
+              component={GoalView}
+              options={() => ({
+                ...optionsStack,
+                headerShown: false,
+              })}
+            />
+          </Stack.Navigator>
         </NavigationContainer>
-      ) : (
+      )}
+      {!user.user && !user.isLoading && (
         <NavigationContainer>
           <Tab.Navigator
             screenOptions={{
@@ -95,6 +87,7 @@ const Router = () => {
           </Tab.Navigator>
         </NavigationContainer>
       )}
+      {user.isLoading && <></>}
 
       <StatusBar backgroundColor="#000" />
     </>

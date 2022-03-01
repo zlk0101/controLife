@@ -17,6 +17,7 @@ const CardAuth: React.FC<AuthCardPropsI> = ({
   checkValue,
   checkChange,
   serverError,
+  node,
 }) => {
   return (
     <View style={styles.container}>
@@ -32,13 +33,19 @@ const CardAuth: React.FC<AuthCardPropsI> = ({
               placeholder={item.placeHolder}
             />
             {item.nameError && (
-              <Text style={{ color: "#f88" }}>{item.nameError}</Text>
+              <Text style={{ color: "#f88", fontSize: 12 }}>
+                {item.nameError}
+              </Text>
             )}
           </View>
         );
       })}
+      {node}
+
       {serverError && (
-        <Text style={{ color: "#f55" }}>{"* " + serverError}</Text>
+        <Text style={{ color: "#f55", fontSize: 12 }}>
+          {"* " + serverError}
+        </Text>
       )}
       {buttonTitle === "Register" ? (
         <TouchableOpacity onPress={checkChange} style={styles.terms}>

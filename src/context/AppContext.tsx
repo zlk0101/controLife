@@ -1,8 +1,6 @@
-import {createContext} from 'react';
+import { createContext } from "react";
+import { initialState } from "./initialState";
+import { AppStateI } from "./types";
 
-import {AppStateI} from './types';
-const initialState: AppStateI = {
-  user: null,
-};
 const AppContext = createContext<AppStateI>(initialState);
 export default AppContext;
